@@ -1,5 +1,5 @@
 # React ToDo App
-- Replace `gulldan1996` with your Github username in the [DEMO LINK](https://gulldan1996.github.io/react_todo-app/)
+- Replace `gulldan1996` with your Github username in the [DEMO LINK](https://gulldan1996.github.io/todos/)
 - Follow the [React task guideline](https://github.com/mate-academy/react_task-guideline#react-tasks-guideline)
 
 ## Description
