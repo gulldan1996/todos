@@ -5,6 +5,7 @@ const initialState = {
   nextId: 1,
   items: [],
   display: 'all',
+  markAll: true,
 };
 
 export function getNextState(state = initialState, action) {
@@ -13,6 +14,13 @@ export function getNextState(state = initialState, action) {
       return {
         ...state,
         input: action.inputValue,
+      };
+    }
+
+    case ACTION_TYPE.UPDATE_INPUT_EDIT: {
+      return {
+        ...state,
+        currentValue: action.value,
       };
     }
 
@@ -26,6 +34,7 @@ export function getNextState(state = initialState, action) {
               id: state.nextId,
               title: state.input,
               completed: false,
+              isEditing: false,
             },
           ],
           nextId: state.nextId + 1,
@@ -71,6 +80,74 @@ export function getNextState(state = initialState, action) {
         ...state,
         display: action.displayMode,
       };
+    }
+
+    case ACTION_TYPE.MARK_ALL_ITEMS: {
+      return {
+        ...state,
+        markAll: !state.markAll,
+        items: [...state.items].map((item) => {
+          return {
+            id: item.id,
+            title: item.title,
+            completed: state.markAll,
+          };
+        }),
+      };
+    }
+
+    case ACTION_TYPE.EDIT_INPUT: {
+      return {
+        ...state,
+        items: state.items.map((item) => {
+          if (item.id !== action.id) {
+            return item;
+          }
+
+          return {
+            ...item,
+            isEditing: !action.isEditing,
+          };
+        }),
+        currentValue: action.title,
+      };
+    }
+
+    case ACTION_TYPE.ON_INPUT_KEY_DOWN: {
+      // if (action.key.keyCode === 27 || !state.currentValue) {
+      //   return {
+      //     items: state.items.map((item) => {
+      //       if (item.id !== action.id) {
+      //         return item;
+      //       }
+
+      //       return {
+      //         ...item,
+      //         isEditing: false,
+      //         title: state.currentValue,
+      //       };
+      //     }),
+      //   };
+      // }
+
+      if (action.e === 'Enter' && state.currentValue.trim() !== '') {
+        return {
+          ...state,
+          items: [
+            ...state.items,
+            {
+              id: state.nextId,
+              title: state.currentValue,
+              completed: false,
+              isEditing: false,
+            },
+          ],
+          nextId: state.nextId + 1,
+          currentValue: '',
+        };
+      }
+
+      return state;
     }
 
     default:

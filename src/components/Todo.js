@@ -11,6 +11,10 @@ import {
   toggleItem,
   changeDisplayMode,
   removeCompleted,
+  markAllItems,
+  editInputClick,
+  onInputKeyDown,
+  updateEditInput,
 } from '../redux/actions';
 import { itemsLeft } from '../redux/selectors';
 
@@ -25,7 +29,27 @@ const Todo = ({
   display,
   changeDisplayMode,
   removeCompleted,
+  markAllItems,
+  editInputClick,
+  onInputKeyDown,
+  currentValue,
+  updateEditInput,
 }) => {
+  const filterCompleted = todosItems.filter(i => i.completed);
+  const filterActive = todosItems.filter(i => !i.completed);
+  let filteredItem;
+
+  if (display === 'all') {
+    filteredItem = todosItems;
+  }
+
+  if (display === 'completed') {
+    filteredItem = filterCompleted;
+  }
+
+  if (display === 'active') {
+    filteredItem = filterActive;
+  }
 
   return (
     <section className="todoapp">
@@ -36,11 +60,11 @@ const Todo = ({
       />
 
       <section className="main">
-        <MarkAll todosItems={todosItems} />
+        <MarkAll todosItems={todosItems} markAllItems={markAllItems} />
 
         <ul className="todo-list">
-          {todosItems.length !== 0
-            ? todosItems.map((todos) => {
+          {filteredItem.length !== 0
+            ? filteredItem.map(todos => {
               const { id, completed } = todos;
 
               return (
@@ -48,11 +72,15 @@ const Todo = ({
                   todosItem={todos}
                   toggleItem={toggleItem}
                   key={id}
-                  id={id}
                   removeItem={removeItem}
                   completed={completed}
-                  itemsLeft={itemsLeft}
                   display={display}
+                  editInputClick={editInputClick}
+                  updateEditInput={updateEditInput}
+                  addItem={addItem}
+                  itemsLeft={itemsLeft}
+                  currentValue={currentValue}
+                  onInputKeyDown={onInputKeyDown}
                 />
               );
             })
@@ -77,6 +105,7 @@ const mapStateToProps = state => ({
   id: state.nextId,
   todosItems: state.items,
   itemsLeft: itemsLeft(state),
+  currentValue: state.currentValue,
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -86,6 +115,10 @@ const mapDispatchToProps = dispatch => ({
   toggleItem: id => dispatch(toggleItem(id)),
   changeDisplayMode: mode => dispatch(changeDisplayMode(mode)),
   removeCompleted: () => dispatch(removeCompleted()),
+  markAllItems: () => dispatch(markAllItems()),
+  editInputClick: (e, id, title) => dispatch(editInputClick(e, id, title)),
+  onInputKeyDown: (key, id) => dispatch(onInputKeyDown(key, id)),
+  updateEditInput: v => dispatch(updateEditInput(v)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Todo);
