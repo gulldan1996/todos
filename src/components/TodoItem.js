@@ -1,15 +1,14 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import Input from './Input';
+import { removeItem, toggleItem, doubleClickOnInput } from '../redux/actions';
 
 const TodoItem = ({
   todosItem,
   removeItem,
   toggleItem,
   completed,
-  editInputClick,
-  updateEditInput,
-  onInputKeyDown,
-  currentValue,
+  doubleClickOnInput,
 }) => {
   const { title, isEditing, id } = todosItem;
 
@@ -18,7 +17,7 @@ const TodoItem = ({
       {!isEditing ? (
         <li
           className={completed ? 'completed' : null}
-          onDoubleClick={() => editInputClick(isEditing, id, title)}
+          onDoubleClick={() => doubleClickOnInput(isEditing, id, title)}
         >
           <div className="view">
             <input
@@ -36,15 +35,19 @@ const TodoItem = ({
           </div>
         </li>
       ) : (
-        <Input
-          updateEditInput={updateEditInput}
-          inputValue={currentValue}
-          onInputKeyDown={onInputKeyDown}
-          id={id}
-        />
+        <Input id={id} />
       )}
     </>
   );
 };
 
-export default TodoItem;
+const mapStateToProps = state => ({
+});
+
+const mapDispatchToProps = dispatch => ({
+  removeItem: id => dispatch(removeItem(id)),
+  toggleItem: id => dispatch(toggleItem(id)),
+  doubleClickOnInput: (e, id, t) => dispatch(doubleClickOnInput(e, id, t)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(TodoItem);
